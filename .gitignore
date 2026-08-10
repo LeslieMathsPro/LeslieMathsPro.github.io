@@ -27,3 +27,8 @@ pnpm-debug.log*
 
 # IDE 工作区标记
 .aicoding-chat-workspace
+
+# 临时验证目录
+.tmp-verify/
+.tmp-npm-cache/
+.tmp-purge-registry.py
