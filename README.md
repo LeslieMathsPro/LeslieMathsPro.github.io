@@ -123,6 +123,24 @@ git push
 
 > GitHub Pages 在免费账号下要求仓库为 **public**。私有仓库需要 Pages Pro。
 
+### `master` 分支是旧站点存档
+
+本仓库的 `master` 分支保存着 2025 年的 Jekyll 版个人主页，**未被删除**，其中有三篇早期文章：
+
+| 文件 | 体量 |
+| --- | --- |
+| `_posts/2025_03_13-运筹优化与运力规划.markdown` | 7.8 KB，实战内容 |
+| `_posts/2025_03_13-概率论.markdown` | 1.5 KB |
+| `_posts/2025-03-03-CUDA基础.markdown` | 93 字节，仅标题 |
+
+需要取回时：
+
+```bash
+git show origin/master:_posts/2025_03_13-运筹优化与运力规划.markdown > 文章.md
+```
+
+取回后改写成 Astro 的 frontmatter 格式（见上文「写文章」），放进 `src/content/posts/` 即可。Jekyll 的 `layout` / `categories` 字段要换成本项目的 `description` / `tags`。
+
 ### 网络说明
 
 本机 SSH 22 端口被封锁，remote 已配置为走 443 端口：
