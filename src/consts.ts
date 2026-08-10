@@ -7,6 +7,15 @@ export const SITE_TITLE = 'TODO 你的名字 · 技术博客';
 export const SITE_DESCRIPTION =
 	'AI / 算法工程师的技术笔记：大模型应用、推理优化、Agent 架构与工程实践。';
 
+/**
+ * 是否允许搜索引擎收录。
+ *
+ * false（当前值）：全站输出 noindex + robots.txt 拒绝抓取。
+ *   信息还没填完、只想先跑通部署链路时保持 false，避免半成品被搜索引擎收录。
+ * true：正式公开。把 TODO 都替换成真实信息、确认页面无误后再改成 true。
+ */
+export const INDEXABLE = false;
+
 /** 首页强定位区文案：面试官通常只看这一屏 */
 export const HERO = {
 	/** TODO 换成你的名字 */

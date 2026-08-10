@@ -1,5 +1,5 @@
 ---
-import { SITE_DESCRIPTION, SITE_TITLE, HERO, SOCIALS } from '@/consts';
+import { SITE_DESCRIPTION, SITE_TITLE, HERO, SOCIALS, INDEXABLE } from '@/consts';
 import '@/styles/global.css';
 
 interface Props {
@@ -70,6 +70,9 @@ const jsonLd =
 	href={new URL('rss.xml', Astro.site)}
 />
 <link rel="canonical" href={canonicalURL} />
+
+{/* 未正式公开前拒绝收录，避免占位符内容进入搜索结果 */}
+{!INDEXABLE && <meta name="robots" content="noindex, nofollow" />}
 
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
