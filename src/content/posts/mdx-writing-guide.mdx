@@ -1,0 +1,120 @@
+---
+title: 'MDX 写作指南：这个博客支持哪些渲染能力'
+description: '这篇既是示例也是说明书：演示代码高亮、数学公式、表格、以及在文章里直接嵌入交互组件的写法。写新文章时可以直接照抄这里的格式。'
+pubDate: 2026-07-05
+tags: ['MDX', 'Astro', '写作']
+---
+
+import Callout from '@/components/Callout.astro';
+
+这篇文章的作用是**格式参考**。写新文章时可以直接对照这里的语法。
+
+## 什么时候用 .md，什么时候用 .mdx
+
+两种格式都放在 `src/content/posts/` 下，随时可以切换。区别只有一个：MDX 能在正文里写组件。
+
+| | `.md` | `.mdx` |
+| --- | --- | --- |
+| 代码高亮 | 支持 | 支持 |
+| 数学公式 | 支持 | 支持 |
+| 表格 / 引用 / 列表 | 支持 | 支持 |
+| 嵌入 Astro / React 组件 | 不支持 | 支持 |
+| 花括号 `{}` 需要转义 | 不需要 | **需要** |
+
+<Callout type="tip" title="选择建议">
+公式密集的文章优先用 `.md`。MDX 把 `{` 当作表达式起始符，大量 LaTeX 花括号需要转义，写起来很累。只有确实要嵌组件时才用 `.mdx`。
+</Callout>
+
+## 代码块
+
+用三个反引号加语言标识。支持明暗两套配色，会跟随站点主题自动切换：
+
+```typescript
+type CacheEntry<T> = {
+	value: T;
+	expiresAt: number;
+};
+
+/** 带 TTL 的极简内存缓存，命中即续期 */
+export class TTLCache<T> {
+	#store = new Map<string, CacheEntry<T>>();
+
+	constructor(private readonly ttlMs: number) {}
+
+	get(key: string): T | undefined {
+		const entry = this.#store.get(key);
+		if (!entry) return undefined;
+		if (Date.now() > entry.expiresAt) {
+			this.#store.delete(key);
+			return undefined;
+		}
+		entry.expiresAt = Date.now() + this.ttlMs;
+		return entry.value;
+	}
+
+	set(key: string, value: T): void {
+		this.#store.set(key, { value, expiresAt: Date.now() + this.ttlMs });
+	}
+}
+```
+
+也支持 shell、diff 等：
+
+```bash
+npm run dev      # 本地开发，默认 http://localhost:4321
+npm run build    # 生产构建，产物在 dist/
+npm run preview  # 预览构建产物
+```
+
+## 数学公式
+
+行内公式用单个 `$` 包裹，比如交叉熵损失 $L = -\sum_i y_i \log \hat{y}_i$ 可以直接写在句子里。
+
+块级公式用 `$$`：
+
+$$
+\mathrm{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}
+$$
+
+窄屏下超长公式会自动横向滚动，不会撑破布局。
+
+## 提示块
+
+`Callout` 组件有三种类型：
+
+<Callout>
+默认样式，用于补充说明。
+</Callout>
+
+<Callout type="tip" title="经验之谈">
+用来放可复用的判断准则或踩坑经验。求职向的博客里，这类内容最能体现工程判断力。
+</Callout>
+
+<Callout type="warning" title="注意">
+用来标注容易出错的地方。
+</Callout>
+
+## 文章元信息
+
+每篇文章的 frontmatter 支持这些字段：
+
+```yaml
+---
+title: '文章标题'                    # 必填
+description: '摘要，会用于 SEO 和列表页'  # 必填
+pubDate: 2026-07-05                 # 必填
+updatedDate: 2026-07-20             # 可选，显示「更新于」
+tags: ['标签一', '标签二']            # 可选，自动生成标签聚合页
+draft: true                         # 可选，true 则不出现在生产环境
+featured: true                      # 可选，true 则出现在首页精选
+heroImage: './cover.png'            # 可选，文章封面
+---
+```
+
+<Callout type="warning" title="字段是强校验的">
+frontmatter 由 Zod schema 校验。少填必填字段或写错类型，构建会直接失败并指出具体是哪个文件的哪个字段——这比上线后才发现页面渲染空白要好得多。
+</Callout>
+
+## 标题层级与目录
+
+文章右侧的目录自动从 `h2` 和 `h3` 生成，滚动时会高亮当前小节。所以正文里**不要再写 `h1`**（标题已经由 frontmatter 的 `title` 渲染），从 `h2` 开始用。

@@ -1,0 +1,16 @@
+---
+import ProjectCard from '@/components/ProjectCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { PROJECTS } from '@/data/projects';
+---
+
+<BaseLayout title="项目" description="个人技术项目与工程实践作品集">
+	<h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">项目</h1>
+	<p class="mt-3 max-w-2xl leading-relaxed text-zinc-600 dark:text-zinc-400">
+		这里列出我主导或深度参与的项目。每个项目都写清了具体难点和可验证的结果，而不只是技术栈清单。
+	</p>
+
+	<div class="mt-10 grid gap-5">
+		{PROJECTS.map((project) => <ProjectCard project={project} />)}
+	</div>
+</BaseLayout>

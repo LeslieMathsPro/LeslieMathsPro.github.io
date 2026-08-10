@@ -1,0 +1,38 @@
+---
+import BaseHead from '@/components/BaseHead.astro';
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
+	tags?: string[];
+	/** 宽屏布局：文章详情页需要额外空间放侧边目录 */
+	wide?: boolean;
+}
+
+const { wide = false, ...head } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead {...head} />
+	</head>
+	<body class="flex min-h-screen flex-col">
+		<Header />
+		<main
+			class:list={[
+				'mx-auto w-full flex-1 px-4 py-12 sm:px-6',
+				wide ? 'max-w-6xl' : 'max-w-4xl',
+			]}
+		>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

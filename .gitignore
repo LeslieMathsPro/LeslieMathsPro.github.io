@@ -1,0 +1,29 @@
+# 构建产物
+dist/
+.astro/
+
+# 依赖
+node_modules/
+
+# 日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 环境变量
+.env
+.env.production
+.env.local
+
+# 编辑器与系统文件
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 部署平台
+.vercel/
+
+# IDE 工作区标记
+.aicoding-chat-workspace

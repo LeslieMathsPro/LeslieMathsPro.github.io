@@ -1,0 +1,134 @@
+---
+import { Image } from 'astro:assets';
+import type { MarkdownHeading } from 'astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import TagPill from '@/components/TagPill.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getReadingTime, type Post } from '@/lib/posts';
+// KaTeX 字体与样式只在文章页加载，避免拖慢首页
+import 'katex/dist/katex.min.css';
+
+interface Props {
+	post: Post;
+	headings: MarkdownHeading[];
+	prev?: Post | undefined;
+	next?: Post | undefined;
+}
+
+const { post, headings, prev, next } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, heroImage, draft } = post.data;
+const readingTime = getReadingTime(post.body);
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	type="article"
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
+	tags={[...tags]}
+	wide
+>
+	<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-12">
+		<article class="min-w-0">
+			<header class="mb-10">
+				{
+					draft && (
+						<p class="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
+							这是一篇草稿，不会出现在生产环境的文章列表中。
+						</p>
+					)
+				}
+
+				<h1
+					class="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-100"
+				>
+					{title}
+				</h1>
+
+				<div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-500">
+					<FormattedDate date={pubDate} />
+					{
+						updatedDate && (
+							<>
+								<span aria-hidden="true">·</span>
+								<span>
+									更新于 <FormattedDate date={updatedDate} />
+								</span>
+							</>
+						)
+					}
+					<span aria-hidden="true">·</span>
+					<span>{readingTime} 分钟阅读</span>
+				</div>
+
+				{
+					tags.length > 0 && (
+						<div class="mt-4 flex flex-wrap gap-1.5">
+							{tags.map((tag) => (
+								<TagPill tag={tag} />
+							))}
+						</div>
+					)
+				}
+
+				{
+					heroImage && (
+						<Image
+							src={heroImage}
+							alt=""
+							widths={[480, 800, 1200]}
+							sizes="(min-width: 1024px) 800px, 100vw"
+							class="mt-8 rounded-xl border border-zinc-200 dark:border-zinc-800"
+						/>
+					)
+				}
+			</header>
+
+			<div class="prose prose-zinc max-w-none dark:prose-invert">
+				<slot />
+			</div>
+
+			{
+				(prev || next) && (
+					<nav
+						aria-label="上下篇导航"
+						class="mt-16 grid gap-4 border-t border-zinc-200 pt-8 sm:grid-cols-2 dark:border-zinc-800"
+					>
+						{prev ? (
+							<a
+								href={`/posts/${prev.id}/`}
+								class="group rounded-lg border border-zinc-200 p-4 transition-colors hover:border-accent-300 dark:border-zinc-800 dark:hover:border-accent-400/50"
+							>
+								<span class="text-xs text-zinc-500">← 上一篇</span>
+								<p class="mt-1 text-sm font-medium text-zinc-900 group-hover:text-accent-600 dark:text-zinc-100 dark:group-hover:text-accent-400">
+									{prev.data.title}
+								</p>
+							</a>
+						) : (
+							<div></div>
+						)}
+						{next && (
+							<a
+								href={`/posts/${next.id}/`}
+								class="group rounded-lg border border-zinc-200 p-4 text-right transition-colors hover:border-accent-300 dark:border-zinc-800 dark:hover:border-accent-400/50"
+							>
+								<span class="text-xs text-zinc-500">下一篇 →</span>
+								<p class="mt-1 text-sm font-medium text-zinc-900 group-hover:text-accent-600 dark:text-zinc-100 dark:group-hover:text-accent-400">
+									{next.data.title}
+								</p>
+							</a>
+						)}
+					</nav>
+				)
+			}
+		</article>
+
+		<aside class="mt-12 hidden lg:mt-0 lg:block">
+			<div class="sticky top-24">
+				<TableOfContents headings={headings} />
+			</div>
+		</aside>
+	</div>
+</BaseLayout>

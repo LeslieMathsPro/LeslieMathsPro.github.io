@@ -1,0 +1,121 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { HERO, SOCIALS } from '@/consts';
+import { ABOUT_INTRO, LEVEL_LABELS, SKILL_GROUPS, TIMELINE } from '@/data/about';
+
+type Contact = { label: string; value: string; href: string };
+
+const contacts: Contact[] = [
+	...(SOCIALS.email
+		? [{ label: '邮箱', value: SOCIALS.email, href: `mailto:${SOCIALS.email}` }]
+		: []),
+	...(SOCIALS.github
+		? [{ label: 'GitHub', value: SOCIALS.github, href: SOCIALS.github }]
+		: []),
+	...(SOCIALS.zhihu ? [{ label: '知乎', value: SOCIALS.zhihu, href: SOCIALS.zhihu }] : []),
+	...(SOCIALS.x ? [{ label: 'X', value: SOCIALS.x, href: SOCIALS.x }] : []),
+	...(SOCIALS.linkedin
+		? [{ label: 'LinkedIn', value: SOCIALS.linkedin, href: SOCIALS.linkedin }]
+		: []),
+	...(SOCIALS.resume
+		? [{ label: '简历', value: '下载 PDF', href: SOCIALS.resume }]
+		: []),
+];
+---
+
+<BaseLayout title="关于" description={`关于 ${HERO.name}：技术栈、经历与联系方式`}>
+	<h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">关于我</h1>
+
+	<div class="mt-6 max-w-2xl space-y-4">
+		{
+			ABOUT_INTRO.map((paragraph) => (
+				<p class="leading-relaxed text-zinc-600 dark:text-zinc-400">{paragraph}</p>
+			))
+		}
+	</div>
+
+	<section class="mt-14">
+		<h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">技术栈</h2>
+		<div class="mt-5 space-y-5">
+			{
+				SKILL_GROUPS.map((group) => (
+					<div class="sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
+						<div class="shrink-0">
+							<p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+								{group.category}
+							</p>
+							<p class="mt-0.5 text-xs text-zinc-500">{LEVEL_LABELS[group.level]}</p>
+						</div>
+						<div class="mt-2 flex flex-wrap gap-1.5 sm:mt-0">
+							{group.items.map((item) => (
+								<span
+									class:list={[
+										'rounded-md px-2 py-1 font-mono text-xs',
+										group.level === 'core'
+											? 'bg-accent-50 text-accent-700 dark:bg-accent-700/20 dark:text-accent-300'
+											: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
+									]}
+								>
+									{item}
+								</span>
+							))}
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="mt-14">
+		<h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">经历</h2>
+		<div class="mt-6 space-y-8 border-l border-zinc-200 pl-6 dark:border-zinc-800">
+			{
+				TIMELINE.map((item) => (
+					<div class="relative">
+						<span
+							class="absolute -left-[1.9rem] top-1.5 size-2 rounded-full border-2 border-white bg-accent-500 dark:border-zinc-950"
+							aria-hidden="true"
+						></span>
+						<p class="font-mono text-xs text-zinc-500">{item.period}</p>
+						<h3 class="mt-1 text-base font-medium text-zinc-900 dark:text-zinc-100">
+							{item.title}
+						</h3>
+						<p class="text-sm text-zinc-500">{item.org}</p>
+						<ul class="mt-2 space-y-1">
+							{item.points.map((point) => (
+								<li class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+									{point}
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	{
+		contacts.length > 0 && (
+			<section class="mt-14">
+				<h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">联系方式</h2>
+				<dl class="mt-5 space-y-3">
+					{contacts.map((item) => (
+						<div class="flex gap-4 text-sm">
+							<dt class="w-20 shrink-0 text-zinc-500">{item.label}</dt>
+							<dd class="min-w-0">
+								<a
+									href={item.href}
+									target={item.href.startsWith('http') ? '_blank' : undefined}
+									rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+									class="break-all text-accent-600 hover:underline dark:text-accent-400"
+								>
+									{item.value}
+								</a>
+							</dd>
+						</div>
+					))}
+				</dl>
+			</section>
+		)
+	}
+</BaseLayout>

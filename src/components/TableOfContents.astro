@@ -1,0 +1,65 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// 只取 h2/h3：h1 是文章标题，h4 以下层级过深不适合放进目录
+const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{
+	items.length > 1 && (
+		<nav aria-label="目录" class="text-sm">
+			<p class="mb-3 font-medium text-zinc-900 dark:text-zinc-100">目录</p>
+			<ul class="space-y-2 border-l border-zinc-200 dark:border-zinc-800">
+				{items.map((heading) => (
+					<li class:list={[heading.depth === 3 && 'ml-3']}>
+						<a
+							href={`#${heading.slug}`}
+							data-toc-link
+							class="-ml-px block border-l border-transparent pl-3 text-zinc-500 transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400"
+						>
+							{heading.text}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)
+}
+
+<script>
+	// 滚动时高亮当前所在小节
+	const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+	if (links.length > 0) {
+		// Tailwind v4 的 important 修饰符写在末尾
+		const activeClasses = ['border-accent-500!', 'text-accent-600', 'dark:text-accent-400'];
+		const linkBySlug = new Map<string, HTMLAnchorElement>();
+		for (const link of links) {
+			linkBySlug.set(decodeURIComponent(link.hash.slice(1)), link);
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const link = linkBySlug.get(entry.target.id);
+					if (!link) continue;
+					link.classList.toggle(activeClasses[0]!, entry.isIntersecting);
+					link.classList.toggle(activeClasses[1]!, entry.isIntersecting);
+					link.classList.toggle(activeClasses[2]!, entry.isIntersecting);
+				}
+			},
+			// 顶部留出吸顶导航的高度，底部收窄，保证同时只命中一两个标题
+			{ rootMargin: '-80px 0px -70% 0px' },
+		);
+
+		for (const slug of linkBySlug.keys()) {
+			const heading = document.getElementById(slug);
+			if (heading) observer.observe(heading);
+		}
+	}
+</script>

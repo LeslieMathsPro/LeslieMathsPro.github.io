@@ -1,0 +1,40 @@
+---
+import { SOCIALS, HERO } from '@/consts';
+
+const year = new Date().getFullYear();
+
+const links: { href: string; label: string }[] = [
+	...(SOCIALS.github ? [{ href: SOCIALS.github, label: 'GitHub' }] : []),
+	...(SOCIALS.email ? [{ href: `mailto:${SOCIALS.email}`, label: 'Email' }] : []),
+	...(SOCIALS.zhihu ? [{ href: SOCIALS.zhihu, label: '知乎' }] : []),
+	...(SOCIALS.x ? [{ href: SOCIALS.x, label: 'X' }] : []),
+	...(SOCIALS.linkedin ? [{ href: SOCIALS.linkedin, label: 'LinkedIn' }] : []),
+	...(SOCIALS.resume ? [{ href: SOCIALS.resume, label: '简历' }] : []),
+];
+---
+
+<footer class="mt-24 border-t border-zinc-200 dark:border-zinc-800">
+	<div
+		class="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-10 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:text-zinc-500"
+	>
+		<p>© {year} {HERO.name}</p>
+		<div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+			{
+				links.map((link) => (
+					<a
+						href={link.href}
+						rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+						target={link.href.startsWith('http') ? '_blank' : undefined}
+						class="transition-colors hover:text-accent-600 dark:hover:text-accent-400"
+					>
+						{link.label}
+					</a>
+				))
+			}
+			<a
+				href="/rss.xml"
+				class="transition-colors hover:text-accent-600 dark:hover:text-accent-400">RSS</a
+			>
+		</div>
+	</div>
+</footer>

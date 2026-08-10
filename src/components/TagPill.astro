@@ -1,0 +1,25 @@
+---
+import { tagToPath } from '@/lib/posts';
+
+interface Props {
+	tag: string;
+	count?: number;
+	/** 当前页面正在筛选的标签，用于高亮 */
+	active?: boolean;
+}
+
+const { tag, count, active = false } = Astro.props;
+---
+
+<a
+	href={tagToPath(tag)}
+	class:list={[
+		'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs transition-colors',
+		active
+			? 'border-accent-500 bg-accent-500 text-white'
+			: 'border-zinc-200 text-zinc-600 hover:border-accent-300 hover:text-accent-600 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-accent-400 dark:hover:text-accent-400',
+	]}
+>
+	<span>#{tag}</span>
+	{count !== undefined && <span class="opacity-60">{count}</span>}
+</a>

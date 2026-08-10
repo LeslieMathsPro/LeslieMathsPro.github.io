@@ -1,0 +1,137 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* 暗色模式采用 class 策略：由 <html class="dark"> 控制 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--font-sans:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+		'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+	--font-mono:
+		'SFMono-Regular', 'JetBrains Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+	/* 品牌强调色：偏冷的蓝紫，技术感强且在明暗两色下对比度都够 */
+	--color-accent-50: oklch(0.97 0.02 265);
+	--color-accent-100: oklch(0.94 0.04 265);
+	--color-accent-300: oklch(0.78 0.11 265);
+	--color-accent-500: oklch(0.55 0.19 265);
+	--color-accent-600: oklch(0.48 0.19 265);
+	--color-accent-700: oklch(0.41 0.17 265);
+	--color-accent-400: oklch(0.68 0.16 265);
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		/* 锚点跳转时不被吸顶导航遮住 */
+		scroll-padding-top: 5rem;
+		-webkit-text-size-adjust: 100%;
+	}
+
+	body {
+		@apply bg-white text-zinc-800 antialiased;
+		@apply dark:bg-zinc-950 dark:text-zinc-300;
+		font-family: var(--font-sans);
+	}
+
+	/* 键盘导航可见的焦点环 */
+	:focus-visible {
+		@apply outline-2 outline-offset-2 outline-accent-500;
+	}
+
+	::selection {
+		@apply bg-accent-100 text-accent-700;
+	}
+
+	.dark ::selection {
+		@apply bg-accent-700/40 text-accent-50;
+	}
+}
+
+/*
+ * Shiki 双主题：Astro 会把两套颜色写成 --shiki-light / --shiki-dark 变量，
+ * 明色模式直接生效，暗色模式下需要手动切到 dark 变量。
+ */
+.dark .astro-code,
+.dark .astro-code span {
+	color: var(--shiki-dark) !important;
+	background-color: var(--shiki-dark-bg) !important;
+	font-style: var(--shiki-dark-font-style) !important;
+	font-weight: var(--shiki-dark-font-weight) !important;
+	text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* KaTeX 块级公式在窄屏下允许横向滚动，避免撑破布局 */
+.katex-display {
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 0.5rem 0;
+}
+
+/* 行内公式继承正文字号，防止 KaTeX 默认字号偏大 */
+.katex {
+	font-size: 1.05em;
+}
+
+/* 正文排版：typography 插件的默认值偏英文，这里针对中英混排做调整 */
+.prose {
+	@apply text-zinc-700 dark:text-zinc-300;
+}
+
+.prose :where(h2, h3, h4) {
+	@apply scroll-mt-24 text-zinc-900 dark:text-zinc-100;
+}
+
+.prose :where(h2) {
+	@apply mt-12 border-b border-zinc-200 pb-2 dark:border-zinc-800;
+}
+
+.prose :where(a) {
+	@apply font-normal text-accent-600 decoration-accent-300 underline-offset-2 dark:text-accent-400;
+}
+
+.prose :where(strong) {
+	@apply text-zinc-900 dark:text-zinc-100;
+}
+
+.prose :where(blockquote) {
+	@apply border-l-accent-300 not-italic text-zinc-600 dark:text-zinc-400;
+}
+
+/* 行内代码：去掉 typography 默认的反引号 */
+.prose :where(code):not(:where(pre code)) {
+	@apply rounded border border-zinc-200 bg-zinc-100 px-1 py-0.5 text-[0.875em] font-normal text-accent-700;
+	@apply dark:border-zinc-700 dark:bg-zinc-800 dark:text-accent-300;
+}
+
+.prose :where(code):not(:where(pre code))::before,
+.prose :where(code):not(:where(pre code))::after {
+	content: none;
+}
+
+.prose :where(pre) {
+	@apply rounded-lg border border-zinc-200 text-sm dark:border-zinc-800;
+}
+
+.prose :where(table) {
+	@apply text-sm;
+}
+
+.prose :where(thead th) {
+	@apply text-zinc-900 dark:text-zinc-100;
+}
+
+/* 表格在窄屏下可横向滚动 */
+.prose :where(table) {
+	display: block;
+	overflow-x: auto;
+	white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+	.prose :where(table) {
+		display: table;
+		white-space: normal;
+	}
+}

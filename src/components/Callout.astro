@@ -1,0 +1,41 @@
+---
+/**
+ * 可在 MDX 文章中直接使用的提示块。
+ * 用法：<Callout type="warning">正文</Callout>
+ */
+interface Props {
+	type?: 'note' | 'tip' | 'warning';
+	title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const styles = {
+	note: {
+		box: 'border-zinc-300 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50',
+		label: 'text-zinc-700 dark:text-zinc-300',
+		defaultTitle: '说明',
+	},
+	tip: {
+		box: 'border-accent-300 bg-accent-50 dark:border-accent-400/30 dark:bg-accent-700/10',
+		label: 'text-accent-700 dark:text-accent-300',
+		defaultTitle: '经验',
+	},
+	warning: {
+		box: 'border-amber-300 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10',
+		label: 'text-amber-800 dark:text-amber-400',
+		defaultTitle: '注意',
+	},
+} as const;
+
+const style = styles[type];
+---
+
+<aside class:list={['my-6 rounded-lg border px-4 py-3', style.box]}>
+	<p class:list={['mb-1 text-sm font-semibold', style.label]}>
+		{title ?? style.defaultTitle}
+	</p>
+	<div class="text-sm leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+		<slot />
+	</div>
+</aside>
