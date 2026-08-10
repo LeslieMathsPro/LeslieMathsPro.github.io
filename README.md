@@ -46,13 +46,11 @@ npm run dev        # http://localhost:4321
 - `TIMELINE`：经历时间线
 - `ABOUT_INTRO`：自我介绍正文
 
-**4. `astro.config.mjs`** — 把 `site` 改成你的真实域名
+**4. `src/consts.ts` 的 `INDEXABLE` 开关**
 
-```js
-site: 'https://your-domain.com',
-```
+当前是 `false`：全站输出 `noindex,nofollow`，`robots.txt` 拒绝抓取。等 TODO 都填完、内容确认无误后改成 `true` 才会被搜索引擎收录。
 
-这一项影响 sitemap、RSS 和 canonical 链接的绝对地址，**部署前必须改**。
+站点会正常上线可访问，只是不进搜索结果——避免半成品被收录。
 
 **5. 重新生成分享图**
 
@@ -102,44 +100,49 @@ heroImage: './cover.png'             # 可选，文章封面
 
 `draft: true` 的文章在 `npm run dev` 下可见（列表页带「草稿」角标），`npm run build` 时完全排除——不进列表、不生成页面、不进 RSS 和 sitemap。写到一半的文章可以放心提交到仓库。
 
-## 部署到 Vercel
+## 部署到 GitHub Pages
 
-### 1. 推到 GitHub
+站点部署在 `LeslieMathsPro/LeslieMathsPro.github.io` 仓库，地址 **https://LeslieMathsPro.github.io**。
+
+仓库名符合 `<username>.github.io` 特殊模式，站点服务于根路径，因此 `astro.config.mjs` **不需要配置 `base`**（若换成普通仓库名则必须加，否则 CSS/JS 全部 404）。
+
+### 日常发布流程
 
 ```bash
-git remote add origin git@github.com:your-username/your-repo.git
-git push -u origin main
+git add -A && git commit -m "post: 新文章"
+git push
 ```
 
-### 2. 导入 Vercel
+推送到 `main` 后，[.github/workflows/deploy.yml](.github/workflows/deploy.yml) 自动构建并部署，约 1-2 分钟生效。构建进度可在仓库 **Actions** 页查看。
 
-访问 [vercel.com/new](https://vercel.com/new)，选择该仓库。Vercel 会自动识别 Astro 项目，无需手动配置：
+### 一次性设置（只需做一次）
 
-| 配置项 | 值（自动识别） |
-| --- | --- |
-| Framework Preset | Astro |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-| Install Command | `npm install` |
+在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
 
-点击 Deploy。之后每次 `git push` 都会自动重新部署。
+若这里仍是 `Deploy from a branch`，Actions 构建会成功但站点不会更新——因为 Pages 仍在直接 serve 分支上的源码文件。
 
-### 3. 绑定自定义域名
+> GitHub Pages 在免费账号下要求仓库为 **public**。私有仓库需要 Pages Pro。
 
-在 Vercel 项目的 **Settings → Domains** 添加你的域名，然后到域名注册商的 DNS 配置里添加对应记录：
+### 网络说明
 
-| 场景 | 记录类型 | 名称 | 值 |
-| --- | --- | --- | --- |
-| 根域名 `example.com` | `A` | `@` | `76.76.21.21` |
-| 子域名 `blog.example.com` | `CNAME` | `blog` | `cname.vercel-dns.com` |
+本机 SSH 22 端口被封锁，remote 已配置为走 443 端口：
 
-> 以上是 Vercel 的通用配置值，添加域名时页面会显示当前应使用的确切记录，**以页面显示的值为准**。
+```
+ssh://git@ssh.github.com:443/LeslieMathsPro/LeslieMathsPro.github.io.git
+```
 
-DNS 生效通常在几分钟到几小时。生效后 Vercel 自动签发 HTTPS 证书。
+换网络环境后如需恢复常规地址，执行：
 
-### 4. 别忘了改回 site
+```bash
+git remote set-url origin git@github.com:LeslieMathsPro/LeslieMathsPro.github.io.git
+```
 
-域名绑定好后，把 `astro.config.mjs` 里的 `site` 改成真实域名并重新部署，否则 sitemap 和 RSS 里的链接会是错的。
+### 绑定自定义域名（可选）
+
+1. 在 `public/` 下新建 `CNAME` 文件，内容为一行域名，如 `blog.example.com`
+2. 把 `astro.config.mjs` 的 `site` 改成该域名
+3. 到域名注册商添加 DNS 记录：子域名用 `CNAME` 指向 `LeslieMathsPro.github.io`；根域名用 `A` 记录指向 GitHub Pages 的四个 IP（`185.199.108.153`、`185.199.109.153`、`185.199.110.153`、`185.199.111.153`）
+4. 在 **Settings → Pages → Custom domain** 填入域名并勾选 Enforce HTTPS
 
 ## 技术选型说明
 
@@ -149,7 +152,7 @@ DNS 生效通常在几分钟到几小时。生效后 Vercel 自动签发 HTTPS �
 | 内容 | MDX + Content Collections | frontmatter 强类型校验，写错构建即失败 |
 | 样式 | Tailwind CSS v4 | 无需配置文件，样式集中在 `global.css` |
 | 公式 | remark-math + KaTeX | Astro 7 默认的 Sätteri 处理器暂不支持数学公式，故在 `astro.config.mjs` 中显式切回 `unified()` 管线 |
-| 部署 | Vercel 静态托管 | push 即部署，免费额度足够个人博客 |
+| 部署 | GitHub Pages + Actions | 完全免费，push 即部署，无需第三方账号 |
 
 刻意没有引入 CMS、数据库和评论服务——求职博客的维护成本必须接近零，否则半年后必然荒废。后续若要加评论，推荐 [Giscus](https://giscus.app/zh-CN)（基于 GitHub Discussions，纯前端，不破坏静态架构）。
 

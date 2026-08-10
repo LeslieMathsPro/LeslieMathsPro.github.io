@@ -9,8 +9,9 @@ import remarkMath from 'remark-math';
 
 // https://astro.build/config
 export default defineConfig({
-	// 部署后改成你的真实域名，sitemap / RSS / canonical 都依赖它生成绝对地址
-	site: 'https://your-domain.com',
+	// GitHub Pages 用户站点，仓库名为 <username>.github.io 时服务于根路径，
+	// 因此不需要配置 base。将来若绑定自定义域名，改这里并在 public/ 下加 CNAME 文件。
+	site: 'https://LeslieMathsPro.github.io',
 	integrations: [mdx(), sitemap()],
 	markdown: {
 		// Astro 7 默认使用 Sätteri 处理器，但它暂不支持数学公式。
