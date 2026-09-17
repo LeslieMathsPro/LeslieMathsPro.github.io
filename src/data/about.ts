@@ -54,24 +54,33 @@ export type TimelineItem = {
 
 export const TIMELINE: TimelineItem[] = [
 	{
-		period: '2024 — 至今',
-		title: 'TODO 职位名称',
-		org: 'TODO 公司名称',
+		period: '2026.09 — 至今',
+		title: '运筹优化算法工程师',
+		org: '顺丰集团',
 		points: [
 			'TODO：负责什么系统 / 什么方向，规模量级是多少',
 			'TODO：做出了什么改进，指标从多少变成多少',
 		],
 	},
 	{
-		period: '2022 — 2024',
-		title: 'TODO 职位名称',
-		org: 'TODO 公司名称',
-		points: ['TODO：核心职责与产出'],
+		period: '2025.04 — 2026.08',
+		title: '资深应用算法工程师',
+		org: '阿里巴巴淘宝闪购',
+		points: [
+			'负责运力规划中骑手时段出勤规划，规模量级亿级产能分配与百万级骑手规划',
+			'分阶段运筹建模+Spark高并发产出，落地应用全国，经AB实验履约效能提升15%，单均成本下降0.0x元',
+		],
 	},
 	{
-		period: '2018 — 2022',
-		title: 'TODO 专业 / 学位',
-		org: 'TODO 学校名称',
+		period: '2023.07 — 2025.04',
+		title: '算法工程师',
+		org: '奔曜科技',
+		points: ['垂类机器人调度通用全局最优模型'],
+	},
+	{
+		period: '2020 — 2023',
+		title: '计算机科学与技术 / 工程师学位',
+		org: '法国国立圣埃蒂安高等矿业学院',
 		points: ['TODO：研究方向、获奖、或有代表性的课程项目'],
 	},
 ];
